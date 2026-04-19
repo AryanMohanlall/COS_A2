@@ -1,0 +1,315 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{longtable}
+
+\lstset{
+    language=Java,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    stringstyle=\color{red},
+    commentstyle=\color{green!60!black},
+    breaklines=true,
+    showstringspaces=false
+}
+
+\title{COS 710: Artificial Intelligence \\[1ex]
+\large Assignment 2: Structure-Based Genetic Programming for Electricity Load Prediction}
+
+\author{Aryan Mohanlall \\ U23565536}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Description of the Data Set}
+
+The data set used in this assignment is the \textit{Residential Energy Dataset UK 2014--2020}. It contains residential energy and weather measurements sampled at 15-minute intervals. The data set contains 201,604 rows. Each row corresponds to one timestamp and contains the following columns:
+
+\begin{itemize}
+    \item \texttt{utc\_timestamp}: timestamp of the reading.
+    \item \texttt{Electricity\_load}: residential electricity load. This is the prediction target.
+    \item \texttt{Residential\_electricity\_price}: residential electricity price.
+    \item \texttt{Residential\_solar\_generation}: residential solar generation.
+    \item \texttt{Residential\_wind\_generation}: residential wind generation.
+    \item \texttt{Temperature}: ambient temperature.
+    \item \texttt{Relative Humidity}: relative humidity.
+\end{itemize}
+
+The problem is treated as a time-series prediction task. The aim is to predict the current electricity load at time $t$, denoted $load_t$, without giving the predictor access to the current value of \texttt{Electricity\_load}. Therefore, \texttt{Electricity\_load} is used only as the target value, not as an input feature for the same row.
+
+Since the data is sampled every 15 minutes, there are 96 readings per day:
+
+\begin{equation}
+24 \times 4 = 96.
+\end{equation}
+
+The input features are constructed from the current non-target variables and from the same-time records of the previous seven days. The first seven days are therefore skipped because they do not have a complete history. The feature set used by each program is:
+
+\begin{itemize}
+    \item Current time features:
+    \begin{center}
+    \texttt{price\_t, solar\_t, wind\_t, temp\_t, humidity\_t, day, month, year, hour, minute}
+    \end{center}
+
+    \item Same-time features from the previous seven days:
+    \begin{center}
+    \texttt{load\_d1, price\_d1, solar\_d1, wind\_d1, temp\_d1, humidity\_d1}
+    \end{center}
+    through
+    \begin{center}
+    \texttt{load\_d7, price\_d7, solar\_d7, wind\_d7, temp\_d7, humidity\_d7}.
+    \end{center}
+\end{itemize}
+
+This gives 52 input variables in total. The data is split chronologically, with the first 80\% used for training and the remaining 20\% used for testing. The data is not shuffled, because shuffling would break the time-series ordering and could leak future information into training.
+
+\section{Description of the Performance Metric}
+
+The quality of the predictor is assessed using Root Mean Squared Error (RMSE). For $N$ examples, with actual load $y_i$ and predicted load $\hat{y}_i$, RMSE is defined as:
+
+\begin{equation}
+\text{RMSE} = \sqrt{\frac{1}{N}\sum_{i=1}^{N}(y_i - \hat{y}_i)^2}.
+\end{equation}
+
+RMSE was selected because the task is a regression problem and the prediction error should be measured in the same unit as the target variable. RMSE also penalises large errors more strongly than Mean Absolute Error due to the squared term. This is appropriate for load forecasting, where large prediction errors are more undesirable than small deviations.
+
+During evolution, the selection fitness includes a bloat penalty:
+
+\begin{equation}
+fitness(p) = RMSE(p) + \lambda \cdot size(p),
+\end{equation}
+
+where $size(p)$ is the number of nodes in program $p$ and $\lambda = 0.00001$. This penalty discourages unnecessarily large trees. The final reported training and test performance are still reported as pure RMSE values so that predictive accuracy can be interpreted directly.
+
+\section{Description of How Structure is Incorporated into Canonical GP}
+
+Canonical GP uses fitness as the main guide for search. In contrast, Structure-Based Genetic Programming (SBGP) uses both behavioural information, in the form of fitness, and structural information, in the form of the syntax tree shape.
+
+The SBGP implementation follows the global--local structure described in the course material. Evolution alternates between two phases:
+
+\subsection{Global Level Search}
+
+The global phase performs canonical GP-style evolution for $S_g = 10$ generations. At the end of the global phase, the best individual is used to define a \textit{global area}. This global area is the top $D_g = 4$ levels of the best program tree.
+
+For the second and later global phases, offspring are compared against previously exploited global areas. If the top $D_g$ levels of an offspring are too similar to a previously exploited global area, the offspring is discarded. Similarity is measured by counting matching nodes at the same positions in the two top-level tree structures. The threshold used is:
+
+\begin{equation}
+T_g = 6.
+\end{equation}
+
+This prevents the search from repeatedly returning to the same structural region.
+
+\subsection{Local Level Search}
+
+After a global area is selected, local search is performed within that structural region. The first $D_g$ levels of every individual are fixed to match the selected global area. Genetic operators are then only allowed to modify nodes below the fixed global area. This means that local search exploits a particular structural region while still allowing lower-level subtrees to evolve.
+
+Local search terminates early if no improvement is observed for $W_g = 10$ generations. The algorithm then returns to global search to seek a different structural region.
+
+\section{Description of the Representation Used and the Terminal and Function Sets}
+
+\subsection{Program Representation}
+
+Each individual is represented as a binary syntax tree. Internal nodes are function nodes and leaf nodes are terminals. A program is evaluated recursively from the leaves to the root to produce a numeric prediction for the electricity load.
+
+The implementation uses the following node classes:
+
+\begin{itemize}
+    \item \texttt{Function}: internal node containing an operator and two child nodes.
+    \item \texttt{Variable}: terminal node that reads one input feature.
+    \item \texttt{Terminal}: terminal node containing an ephemeral random constant.
+\end{itemize}
+
+The root of every tree must be a function node, and each tree must contain at least three nodes. Therefore, a single variable such as \texttt{load\_d7} is not a valid program by itself. The smallest valid program has the form:
+
+\begin{center}
+\texttt{(x + y)}
+\end{center}
+
+where $x$ and $y$ may be variables or constants.
+
+\subsection{Terminal Set}
+
+The terminal set consists of:
+
+\begin{itemize}
+    \item the 52 input variables described in the data set section, and
+    \item ephemeral random constants sampled uniformly from $[-1, 1]$.
+\end{itemize}
+
+The current electricity load value is not included in the terminal set, because it is the target value to be predicted.
+
+\subsection{Function Set}
+
+The function set is:
+
+\begin{equation}
+\mathcal{F} = \{+, -, \times, \div, min, <0\}.
+\end{equation}
+
+All functions are implemented as binary operators. Division is protected: if the denominator is close to zero, the result returned is 1. The \texttt{min} operator returns the smaller of its two arguments. The \texttt{<0} operator is implemented as a binary conditional:
+
+\begin{equation}
+<0(a,b) =
+\begin{cases}
+b, & a < 0,\\
+0, & otherwise.
+\end{cases}
+\end{equation}
+
+\section{Description of Initial Population Generation}
+
+The initial population is generated using the grow method. For each individual, a maximum depth is randomly chosen between the configured minimum and maximum depth. The tree is then grown recursively. At each non-root position, either a function node or a terminal node may be selected, subject to the depth limit. The root is always forced to be a function node.
+
+Duplicate trees are not permitted in the initial population. Each generated tree is converted to its string representation and compared against the trees already generated. If a duplicate is found, a new tree is generated.
+
+This approach follows the structure-based GP requirement that initial trees are generated using the grow method while maintaining diversity in the initial population.
+
+\section{Description of the Fitness Function and Fitness Evaluation}
+
+Each program is evaluated on the training set. For every training example, the program tree receives the 52 input variables and returns a predicted electricity load. The prediction is compared to the actual load using squared error. The RMSE is then calculated over all training examples.
+
+For evolutionary selection, the fitness function includes a bloat penalty:
+
+\begin{equation}
+fitness(p) = RMSE(p) + 0.00001 \cdot size(p).
+\end{equation}
+
+Lower fitness is better. If a program produces a non-finite value, such as infinity or NaN, it is assigned a very large error. This prevents invalid mathematical expressions from being selected.
+
+The bloat penalty is used only to guide evolution. Final reported training and test scores are pure RMSE values.
+
+\section{Description of the Selection Method}
+
+Tournament selection is used. A tournament consists of four randomly selected individuals:
+
+\begin{equation}
+k = 4.
+\end{equation}
+
+The individual with the lowest fitness is selected. If two individuals have equal fitness, the individual with fewer nodes is preferred. This tie-breaking rule encourages smaller programs and further reduces bloat.
+
+The implementation uses steady-state replacement. In each generation, one offspring is created and evaluated. If the offspring is better than the worst individual in the population, it replaces that worst individual. The population is sorted after replacement so that the best individual is kept at index 0.
+
+Elitism is also used. The best program found so far is tracked and reinserted into the population so that it cannot be lost due to crossover, mutation, or hoist.
+
+\section{Description of Genetic Operators}
+
+The genetic operators used are reproduction, crossover, mutation, and hoist. The baseline rates used in the experiments are:
+
+\begin{itemize}
+    \item Crossover rate: 0.70
+    \item Mutation rate: 0.15
+    \item Hoist rate: 0.02
+    \item Reproduction rate: $1 - 0.70 - 0.15 - 0.02 = 0.13$
+\end{itemize}
+
+\subsection{Reproduction}
+
+Reproduction copies a selected parent unchanged. It preserves good programs and provides stability during evolution.
+
+\subsection{Depth-Aware Crossover}
+
+Crossover replaces a subtree in one parent with a subtree from another parent. Unlike standard subtree crossover, the implementation is depth-aware. After selecting the replacement point in the first parent, the algorithm calculates how much depth is still available before reaching the maximum allowed tree depth. The donor subtree from the second parent must fit within this remaining depth budget.
+
+Crossover is also structure-aware. A function position is replaced by a function subtree, and a terminal position is replaced by a terminal subtree. This preserves the structural role of nodes and prevents invalid offspring. During local search, crossover is only allowed to edit nodes below the fixed global area.
+
+\subsection{Structure-Aware Mutation}
+
+Mutation depends on the type of node selected:
+
+\begin{itemize}
+    \item If a function node is selected, either the operator is changed while keeping its children, or the function subtree is replaced with a newly grown function-root subtree.
+    \item If a terminal node is selected, it is replaced with another terminal, either a variable or an ephemeral random constant.
+\end{itemize}
+
+The mutation is restricted by the maximum tree depth. During local search, mutation is only applied below the fixed global area.
+
+\subsection{Hoist}
+
+Hoist selects a subtree and promotes one of its inner subtrees to replace it. This operator reduces tree size and combats bloat. The implementation rejects hoist results that would violate the minimum size, functional root, or maximum depth constraints.
+
+\subsection{Similarity-Based Rejection}
+
+During global search, offspring are compared to previously exploited global areas. The similarity score counts nodes that match at the same positions within the first $D_g$ levels. If the similarity score is greater than or equal to $T_g = 6$, the offspring is discarded. This is the main mechanism by which SBGP avoids revisiting previously explored structural regions.
+
+\section{Experimental Setup}
+
+The experiments were designed to evaluate the performance of Structure-Based Genetic Programming on the electricity load prediction task. The implementation was written in Java and each run trained an independent SBGP population on the same training partition of the data set. The final model from each run was then evaluated on the held-out test partition.
+
+\subsection{Parameter Values}
+
+The baseline parameter configuration used in the experiments is shown in Table~\ref{tab:parameters}. The values are consistent with the implementation in \texttt{Main.java} and \texttt{SBGP.java}.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Parameter} & \textbf{Value} \\
+\hline
+Number of runs & 15 \\
+Population size & 100 \\
+Generations & 100 \\
+Minimum initial depth & 2 \\
+Maximum initial depth & 6 \\
+Crossover rate & 0.70 \\
+Mutation rate & 0.15 \\
+Hoist rate & 0.02 \\
+Reproduction rate & 0.13 \\
+Tournament size & 4 \\
+Bloat penalty & 0.00001 \\
+Training split & 80\% \\
+Testing split & 20\% \\
+\hline
+\end{tabular}
+\caption{Baseline experimental parameter values.}
+\label{tab:parameters}
+\end{table}
+
+The SBGP-specific parameters are shown in Table~\ref{tab:sbgp-parameters}. These values control the alternation between global exploration and local exploitation.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Parameter} & \textbf{Symbol} & \textbf{Value} \\
+\hline
+Global search generations & $S_g$ & 10 \\
+Global area depth & $D_g$ & 4 \\
+Global similarity threshold & $T_g$ & 6 \\
+Local window tolerance & $W_g$ & 10 \\
+\hline
+\end{tabular}
+\caption{Structure-based GP control parameters.}
+\label{tab:sbgp-parameters}
+\end{table}
+
+Fitness was evaluated using the full training set rather than a random sample. This was done to avoid sampling noise and to make the training fitness deterministic for a given program. If the full evaluation becomes too computationally expensive for larger parameter sweeps, the implementation can be adapted to use sampled training evaluation, but the results reported for this configuration are based on full training evaluation.
+
+\subsection{Technical Specifications}
+
+All experiments were implemented in Java (JDK 25) and executed on a single machine in a single threaded manner with the following specifications:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ll}
+\hline
+\textbf{Component} & \textbf{Specification} \\
+\hline
+Processor           & Intel Core i7-13700H (13th Gen) \\
+Base clock speed    & 2.40 GHz \\
+Cores / Threads     & 14 cores / 20 logical processors \\
+RAM                 & 32GB \\
+Operating system    & Windows 11 \\
+Language / Runtime  & Java JDK 25 \\
+\hline
+\end{tabular}
+\caption{Technical specifications of the machine used for development and simulation.}
+\label{tab:specs}
+\end{table}
+
+\end{document}
