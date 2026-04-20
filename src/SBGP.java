@@ -249,9 +249,17 @@ public class SBGP {
         Set<String> seen = new HashSet<>();
         for (int i = 0; i < this.population_size; i++) {
             Program candidate;
+            int attempts = 0;
+            int depthRange = this.max_depth - this.min_depth + 1;
+            int depth = this.min_depth + (i % depthRange);
+            boolean full = i % 2 == 0;
+
             do {
-                int depth = this.min_depth + random.nextInt(this.max_depth - this.min_depth + 1);
-                candidate = Program.growProgram(random, depth, variableCount);
+                candidate = Program.randomProgram(random, depth, variableCount, full);
+                attempts++;
+                if (attempts > 1000) {
+                    throw new IllegalStateException("Could not generate a unique initial program.");
+                }
             } while (seen.contains(candidate.toString()));
 
             seen.add(candidate.toString());

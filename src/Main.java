@@ -1,6 +1,7 @@
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class Main {
     record RunResult(double trainRMSE, double testRMSE, long executionMs, Program bestProgram) {}
@@ -31,6 +32,8 @@ public class Main {
     static final int RUNS = 15;
 
     public static void main(String[] args) throws Exception {
+        Locale.setDefault(Locale.US);
+
         Dataset ds = new Dataset("Residential_Energy_Dataset_UK- 2014-2020.csv");
 
         List<ParamConfig> configs = new ArrayList<>();
@@ -38,17 +41,17 @@ public class Main {
         // Baseline
         configs.add(new ParamConfig(100, 0.7, 0.15, 0.02, 2, 6, 100));
 
-        // // Vary population size
-        // configs.add(new ParamConfig(50, 0.7, 0.15, 0.05, 2, 6, 100));
-        // configs.add(new ParamConfig(200, 0.7, 0.15, 0.05, 2, 6, 100));
+        // Vary population size
+        configs.add(new ParamConfig(50, 0.7, 0.15, 0.05, 2, 6, 100));
+        configs.add(new ParamConfig(200, 0.7, 0.15, 0.05, 2, 6, 100));
 
-        // // Vary max depth
-        // configs.add(new ParamConfig(100, 0.7, 0.15, 0.05, 2, 4, 100));
-        // configs.add(new ParamConfig(100, 0.7, 0.15, 0.05, 2, 8, 100));
+        // Vary max depth
+        configs.add(new ParamConfig(100, 0.7, 0.15, 0.05, 2, 4, 100));
+        configs.add(new ParamConfig(100, 0.7, 0.15, 0.05, 2, 8, 100));
 
-        // // Vary operator balance
-        // configs.add(new ParamConfig(100, 0.8, 0.10, 0.05, 2, 6, 100));
-        // configs.add(new ParamConfig(100, 0.5, 0.30, 0.10, 2, 6, 100));
+        // Vary operator balance
+        configs.add(new ParamConfig(100, 0.8, 0.10, 0.05, 2, 6, 100));
+        configs.add(new ParamConfig(100, 0.5, 0.30, 0.10, 2, 6, 100));
 
         System.out.println(configs.size() + " configs x " + RUNS + " runs each");
 
@@ -93,8 +96,11 @@ public class Main {
             double meanTime = results.stream().mapToDouble(RunResult::executionMs).average().orElse(0);
             double stdTrain = stdDev(results.stream().mapToDouble(RunResult::trainRMSE).toArray(), meanTrain);
             double stdTest = stdDev(results.stream().mapToDouble(RunResult::testRMSE).toArray(), meanTest);
+            double stdTime = stdDev(results.stream().mapToDouble(RunResult::executionMs).toArray(), meanTime);
             double bestTrain = results.stream().mapToDouble(RunResult::trainRMSE).min().orElse(0);
             double bestTest = results.stream().mapToDouble(RunResult::testRMSE).min().orElse(0);
+            long fastestTime = results.stream().mapToLong(RunResult::executionMs).min().orElse(0);
+            long slowestTime = results.stream().mapToLong(RunResult::executionMs).max().orElse(0);
 
             Program overallBest = results.stream()
                     .min((r1, r2) -> Double.compare(r1.trainRMSE, r2.trainRMSE))
@@ -109,6 +115,8 @@ public class Main {
             System.out.println("  Best Train RMSE        : " + String.format("%.5f", bestTrain));
             System.out.println("  Best Test RMSE         : " + String.format("%.5f", bestTest));
             System.out.println("  Avg Time               : " + String.format("%.0f", meanTime) + "ms");
+            System.out.println("  StdDev Time            : " + String.format("%.0f", stdTime) + "ms");
+            System.out.println("  Fastest / Slowest Time : " + fastestTime + "ms / " + slowestTime + "ms");
             System.out.println("  Best Program           : " + overallBest);
             System.out.println();
         }

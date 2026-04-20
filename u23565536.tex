@@ -48,7 +48,7 @@ Since the data is sampled every 15 minutes, there are 96 readings per day:
 24 \times 4 = 96.
 \end{equation}
 
-The input features are constructed from the current non-target variables and from the same-time records of the previous seven days. The first seven days are therefore skipped because they do not have a complete history. The feature set used by each program is:
+The input features are constructed from the current non-target variables and from the same-time records of the previous seven days, so $n=7$ in the assignment wording. The first seven days are therefore skipped because they do not have a complete history. The feature set used by each program is:
 
 \begin{itemize}
     \item Current time features:
@@ -141,7 +141,9 @@ The terminal set consists of:
     \item ephemeral random constants sampled uniformly from $[-1, 1]$.
 \end{itemize}
 
-The current electricity load value is not included in the terminal set, because it is the target value to be predicted.
+The terminal set was chosen to give the GP access to variables that are available at prediction time and to avoid leakage from the value being predicted. The current non-load weather and generation variables were included because they describe the present operating conditions that may influence electricity demand. Calendar variables were included because residential load is time dependent: demand can differ by month, day, hour, and minute. Lagged values from the previous seven days were included because residential demand has strong daily and weekly patterns, so the same time on previous days is a useful predictor.
+
+The current electricity load value is not included in the terminal set, because it is the target value to be predicted. Including \texttt{load\_t} as an input would make the task trivial and would leak the answer into the program. Ephemeral constants are included so that programs can learn offsets, thresholds, and scaling factors rather than only combining raw variables.
 
 \subsection{Function Set}
 
@@ -163,11 +165,21 @@ b, & a < 0,\\
 
 \section{Description of Initial Population Generation}
 
-The initial population is generated using the grow method. For each individual, a maximum depth is randomly chosen between the configured minimum and maximum depth. The tree is then grown recursively. At each non-root position, either a function node or a terminal node may be selected, subject to the depth limit. The root is always forced to be a function node.
+The initial population is generated using ramped half-and-half. This method combines the full and grow tree-generation methods over a range of depths. The aim is to create an initial population with a mixture of small and larger trees, as well as a mixture of regular and irregular tree shapes.
 
-Duplicate trees are not permitted in the initial population. Each generated tree is converted to its string representation and compared against the trees already generated. If a duplicate is found, a new tree is generated.
+\subsection{Full Method}
 
-This approach follows the structure-based GP requirement that initial trees are generated using the grow method while maintaining diversity in the initial population.
+In the full method, all internal nodes up to the selected depth are function nodes, and terminals are only placed at the final level of the tree. Since all functions in this implementation are binary, the full method creates balanced binary trees. This encourages the initial population to contain larger and more structurally complete programs.
+
+\subsection{Grow Method}
+
+In the grow method, each non-root node may become either a function node or a terminal node, subject to the maximum depth limit. This allows trees to stop growing before the maximum depth is reached and therefore creates more irregular program shapes. The root is still forced to be a function node so that a single terminal such as \texttt{load\_d7} cannot be a valid complete program.
+
+\subsection{Ramped Half-and-Half}
+
+For ramped half-and-half, the selected depth cycles through the configured range from the minimum depth to the maximum depth. The implementation alternates between full and grow generation. For example, with depth range 2--6, individuals are generated across depths 2, 3, 4, 5, and 6, with alternating full and grow trees. This provides diversity in both depth and shape.
+
+Duplicate trees are not permitted in the initial population. Each generated tree is converted to its string representation and compared against the trees already generated. If a duplicate is found, a new tree is generated using the same depth and generation method.
 
 \section{Description of the Fitness Function and Fitness Evaluation}
 
@@ -192,6 +204,8 @@ k = 4.
 \end{equation}
 
 The individual with the lowest fitness is selected. If two individuals have equal fitness, the individual with fewer nodes is preferred. This tie-breaking rule encourages smaller programs and further reduces bloat.
+
+The tournament size is fixed at 4 rather than being scaled with the population size. This was chosen to keep the selection pressure moderate across all tested population sizes. Very large tournaments can make high-fitness individuals dominate too quickly and can increase the risk of premature convergence, especially in GP where maintaining structural diversity is important.
 
 The implementation uses steady-state replacement. In each generation, one offspring is created and evaluated. If the offspring is better than the worst individual in the population, it replaces that worst individual. The population is sorted after replacement so that the best individual is kept at index 0.
 
@@ -254,6 +268,7 @@ The baseline parameter configuration used in the experiments is shown in Table~\
 Number of runs & 15 \\
 Population size & 100 \\
 Generations & 100 \\
+Initial population method & Ramped half-and-half \\
 Minimum initial depth & 2 \\
 Maximum initial depth & 6 \\
 Crossover rate & 0.70 \\
@@ -311,5 +326,85 @@ Language / Runtime  & Java JDK 25 \\
 \caption{Technical specifications of the machine used for development and simulation.}
 \label{tab:specs}
 \end{table}
+
+\section{Results and Discussion}
+
+The SBGP experiments were run for 15 independent runs per configuration. This satisfies the minimum requirement of 10 runs and matches the experimental structure used for the canonical GP experiments in Assignment 1. The same data set, train/test split, population settings, depth settings, and operator-rate sweep were used so that the results are directly comparable. Lower RMSE values are better.
+
+\begin{table}[h]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tabular}{llccccc}
+\hline
+\textbf{\#} & \textbf{Configuration} & \textbf{Mean Train} & \textbf{Mean Test} & \textbf{StdDev Train/Test} & \textbf{Best Train} & \textbf{Best Test} \\
+\hline
+1 & Baseline & 0.02952 & 0.03513 & 0.01082 / 0.00986 & 0.01927 & 0.02450 \\
+2 & pop=50 & 0.04488 & 0.05008 & 0.01956 / 0.02089 & 0.02014 & 0.02720 \\
+3 & pop=200 & 0.02464 & 0.03089 & 0.00793 / 0.00647 & 0.01927 & 0.02658 \\
+4 & depth=2-4 & 0.03120 & 0.03798 & 0.01149 / 0.01048 & 0.02096 & 0.02796 \\
+5 & depth=2-8 & 0.02986 & 0.03450 & 0.01169 / 0.00831 & 0.02050 & 0.02753 \\
+6 & cx=0.80, mut=0.10 & 0.03200 & 0.03787 & 0.01337 / 0.01509 & 0.01927 & 0.02484 \\
+7 & cx=0.50, mut=0.30, hoist=0.10 & 0.02695 & 0.03278 & 0.01003 / 0.00710 & 0.01927 & 0.02658 \\
+\hline
+\end{tabular}}
+\caption{SBGP RMSE results across 15 runs per configuration. Baseline = (pop=100, cx=0.70, mut=0.15, hoist=0.02, depth=2-6).}
+\label{tab:sbgp-results}
+\end{table}
+
+The best mean test performance for SBGP was obtained by the larger population configuration, \texttt{pop=200}, with a mean test RMSE of 0.03089. This suggests that the larger population helped SBGP explore more structural regions. The best individual test result was obtained by the baseline configuration, with a best test RMSE of 0.02450. The \texttt{cx=0.80, mut=0.10} configuration also found a strong individual solution with a best test RMSE of 0.02484. These best values show that SBGP was able to find competitive individual solutions, but the mean and standard deviation values show that it did not do so reliably for every run.
+
+\begin{table}[h]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tabular}{llcccc}
+\hline
+\textbf{\#} & \textbf{Configuration} & \textbf{A1 Mean Test} & \textbf{A2 SBGP Mean Test} & \textbf{Difference} & \textbf{Better Mean} \\
+\hline
+1 & Baseline & 0.02729 & 0.03513 & +0.00784 & A1 \\
+2 & pop=50 & 0.02912 & 0.05008 & +0.02096 & A1 \\
+3 & pop=200 & 0.02674 & 0.03089 & +0.00415 & A1 \\
+4 & depth=2-4 & 0.02747 & 0.03798 & +0.01051 & A1 \\
+5 & depth=2-8 & 0.02739 & 0.03450 & +0.00711 & A1 \\
+6 & cx=0.80, mut=0.10 & 0.02760 & 0.03787 & +0.01027 & A1 \\
+7 & cx=0.50, mut=0.30, hoist=0.10 & 0.02695 & 0.03278 & +0.00583 & A1 \\
+\hline
+\end{tabular}}
+\caption{Comparison between Assignment 1 canonical GP and Assignment 2 SBGP mean test RMSE. Positive differences indicate that SBGP had higher error.}
+\label{tab:a1-a2-comparison}
+\end{table}
+
+\subsection{Comparison with Assignment 1}
+
+Compared with the canonical GP results from Assignment 1, the SBGP implementation did not improve average test performance. Assignment 1 produced lower mean test RMSE for every comparable configuration, as shown in Table~\ref{tab:a1-a2-comparison}. The closest result was the \texttt{pop=200} configuration, where SBGP had a mean test RMSE of 0.03089 compared with 0.02674 for canonical GP. This suggests that the larger population helped SBGP explore enough structures to reduce the performance gap, but it still did not outperform canonical GP on average.
+
+\subsection{Runtimes}
+
+\begin{table}[h]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tabular}{llcccc}
+\hline
+\textbf{\#} & \textbf{Configuration} & \textbf{Average runtime (ms)} & \textbf{StdDev runtime (ms)} & \textbf{Fastest (ms)} & \textbf{Slowest (ms)} \\
+\hline
+1 & Baseline & 3908 & 2667 & 1712 & 10638 \\
+2 & pop=50 & 2319 & 1633 & 1325 & 8066 \\
+3 & pop=200 & 10209 & 10392 & 4450 & 47701 \\
+4 & depth=2-4 & 2574 & 751 & 1188 & 4598 \\
+5 & depth=2-8 & 5212 & 2127 & 3618 & 11049 \\
+6 & cx=0.80, mut=0.10 & 3320 & 1120 & 1668 & 5483 \\
+7 & cx=0.50, mut=0.30, hoist=0.10 & 3207 & 683 & 2346 & 4953 \\
+\hline
+\end{tabular}}
+\caption{SBGP runtime results across 15 runs per configuration.}
+\label{tab:runtime-results}
+\end{table}
+
+The runtime results in Table~\ref{tab:runtime-results} show the expected effect of population size. The \texttt{pop=50} configuration was fastest on average, with an average runtime of 2319 ms, while \texttt{pop=200} was slowest, with an average runtime of 10209 ms. The larger population also had the highest runtime variation because one run took 47701 ms. This is likely due to the cost of evaluating larger or more complex trees over the full training set. The depth setting also affected runtime: \texttt{depth=2-8} was slower than \texttt{depth=2-4}, which is expected because deeper trees can contain more nodes and therefore require more recursive evaluations.
+
+The main finding is that SBGP was less reliable than canonical GP for this data set and parameter range. The structure-based global/local search can be beneficial when the selected global area is useful, but it can also cause the population to spend time exploiting a weak structural region. This appears to have happened in several runs, where SBGP converged to poorer expressions and increased the mean and standard deviation. The high standard deviations in Table~\ref{tab:sbgp-results}, especially for \texttt{pop=50}, \texttt{cx=0.80, mut=0.10}, and the baseline configuration, support this interpretation.
+
+The best SBGP programs were still mostly based on lagged load variables such as \texttt{load\_d1}, \texttt{load\_d6}, and \texttt{load\_d7}. This is sensible because residential electricity demand has strong temporal structure, and the same time on previous days is highly informative. Therefore, SBGP did discover relevant predictors, but the structural restrictions did not consistently improve the search beyond canonical GP.
+
+Overall, Assignment 2 did not outperform Assignment 1 in terms of average test RMSE. This does not mean that SBGP is generally worse than canonical GP; it means that for this implementation, data set, and parameter settings, the structure-based search was less stable. Further tuning of the SBGP-specific parameters, especially the global area depth $D_g$, similarity threshold $T_g$, and local search tolerance $W_g$, may improve reliability. A separate validation set could also be used to select the final model without relying only on training RMSE.
 
 \end{document}

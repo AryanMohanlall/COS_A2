@@ -1,0 +1,208 @@
+PS C:\Users\Aryan\Documents\Personal\COS_A2>  c:; cd 'c:\Users\Aryan\Documents\Personal\COS_A2'; & 'C:\Program Files\Java\jdk-25.0.2\bin\java.exe' '-XX:+ShowCodeDetailsInExceptionMessages' '-cp' 'C:\Users\Aryan\AppData\Roaming\Code\User\workspaceStorage\2edeb5893bbcae74bdded75d9434572f\redhat.java\jdt_ws\COS_A2_989e1208\bin' 'Main' 
+7 configs x 15 runs each
+--------------------------------------------------------------------------------------------
+Config 1/7: pop=100 | cx=0.70 | mut=0.15 | hoist=0.02 | depth=2-6 | gen=100
+--------------------------------------------------------------------------------------------
+  Run 1/15 | Train: 0.02067 | Test: 0.02737 | 4510ms | Best: ((price_d5 * price_t) + min(min(load_d7, load_d2), (wind_d5 * humidity_d7)))
+  Run 2/15 | Train: 0.02267 | Test: 0.02924 | 2644ms | Best: min(load_d5, 0.86038)
+  Run 3/15 | Train: 0.03456 | Test: 0.03643 | 3344ms | Best: ((price_d1 - -0.01195) / min(humidity_d7, 0.83810))
+  Run 4/15 | Train: 0.01927 | Test: 0.02658 | 5157ms | Best: if(min((((0.35585 * 0.00951) / (-0.50530 + load_d7)) - min(humidity_d4, humidity_d4)), ((price_d3 + humidity_d7) * (wind_d5 + wind_d7))) < 0, min(((wind_d4 + if(-0.89509 < 0, 0.47836, 0)) + wind_d7), load_d7), 0)
+  Run 5/15 | Train: 0.03347 | Test: 0.04165 | 10638ms | Best: (price_d1 + 0.06554)
+  Run 6/15 | Train: 0.05108 | Test: 0.04859 | 9989ms | Best: (price_d5 - if(solar_d6 < 0, load_d2, 0))
+  Run 7/15 | Train: 0.04077 | Test: 0.05498 | 2593ms | Best: (price_d7 + price_d7)
+  Run 8/15 | Train: 0.05013 | Test: 0.04969 | 2027ms | Best: min(price_t, 0.79886)
+  Run 9/15 | Train: 0.02096 | Test: 0.02796 | 2612ms | Best: min(load_d6, load_d6)
+  Run 10/15 | Train: 0.02434 | Test: 0.02450 | 1766ms | Best: min(0.10350, 0.10350)
+  Run 11/15 | Train: 0.02281 | Test: 0.03059 | 1712ms | Best: (0.04263 + 0.04263)
+  Run 12/15 | Train: 0.02050 | Test: 0.02753 | 2623ms | Best: min(load_d1, load_d1)
+  Run 13/15 | Train: 0.01927 | Test: 0.02658 | 2777ms | Best: min(load_d7, humidity_d3)
+  Run 14/15 | Train: 0.02302 | Test: 0.02955 | 3132ms | Best: min((wind_d1 - -0.29159), load_d3)
+  Run 15/15 | Train: 0.03933 | Test: 0.04569 | 3092ms | Best: (0.62236 * load_d1)
+
+  Mean Train RMSE        : 0.02952
+  Mean Test RMSE         : 0.03513
+  StdDev Train / Test    : 0.01082 / 0.00986
+  Best Train RMSE        : 0.01927
+  Best Test RMSE         : 0.02450
+  Avg Time               : 3908ms
+  StdDev Time            : 2667ms
+  Fastest / Slowest Time : 1712ms / 10638ms
+  Best Program           : if(min((((0.35585 * 0.00951) / (-0.50530 + load_d7)) - min(humidity_d4, humidity_d4)), ((price_d3 + humidity_d7) * (wind_d5 + wind_d7))) < 0, min(((wind_d4 + if(-0.89509 < 0, 0.47836, 0)) + wind_d7), load_d7), 0)
+
+--------------------------------------------------------------------------------------------
+Config 2/7: pop=50 | cx=0.70 | mut=0.15 | hoist=0.05 | depth=2-6 | gen=100
+--------------------------------------------------------------------------------------------
+  Run 1/15 | Train: 0.05074 | Test: 0.04924 | 3008ms | Best: (if(humidity_d6 < 0, min((temp_d6 / price_d6), (load_d5 - -0.37692)), 0) + min(price_d6, (0.25687 / wind_d5)))
+  Run 2/15 | Train: 0.05621 | Test: 0.07376 | 1764ms | Best: (load_d7 - price_d6)
+  Run 3/15 | Train: 0.05072 | Test: 0.04979 | 1325ms | Best: if(-0.36826 < 0, price_d1, 0)
+  Run 4/15 | Train: 0.04741 | Test: 0.04707 | 8066ms | Best: (((((humidity_d7 - price_d5) + (wind_d1 - load_d5)) + if((temp_d5 / -0.39475) < 0, humidity_d4, 0)) + if(((price_d6 * temp_d1) - (-0.97204 + humidity_d3)) < 0, if(min(price_d7, wind_d7) < 0, (-0.15842 / price_d5), 0), 0)) / ((((humidity_d6 + -0.80412) / (price_d6 * 0.77086)) - ((wind_d7 + wind_d4) - (humidity_d2 / load_d5))) + ((min(solar_t, wind_d4) * (temp_d1 / price_d4)) * if(if(year < 0, year, 0) < 0, (minute + price_d6), 0))))
+  Run 5/15 | Train: 0.05044 | Test: 0.04971 | 1327ms | Best: min(price_d7, 0.56877)
+  Run 6/15 | Train: 0.02014 | Test: 0.02720 | 1617ms | Best: min(load_d1, load_d7)
+  Run 7/15 | Train: 0.03812 | Test: 0.04645 | 2866ms | Best: (((price_t - -0.94644) / min(load_d1, load_d6)) / (if(temp_d1 < 0, solar_d3, 0) - (humidity_d3 / -0.54639)))
+  Run 8/15 | Train: 0.05013 | Test: 0.04969 | 1792ms | Best: (min(price_t, humidity_d2) + if(day < 0, -0.36722, 0))
+  Run 9/15 | Train: 0.02090 | Test: 0.02782 | 1790ms | Best: min(load_d6, load_d1)
+  Run 10/15 | Train: 0.09435 | Test: 0.10594 | 2898ms | Best: (((-0.47255 * price_d7) - min(-0.06634, temp_d5)) / (if(-0.12431 < 0, humidity_d2, 0) - (wind_d1 - -0.94012)))
+  Run 11/15 | Train: 0.02248 | Test: 0.02850 | 1343ms | Best: min(load_d5, 0.13814)
+  Run 12/15 | Train: 0.02105 | Test: 0.02790 | 1692ms | Best: min(load_d5, load_d7)
+  Run 13/15 | Train: 0.05326 | Test: 0.05407 | 1568ms | Best: min(wind_d6, price_d7)
+  Run 14/15 | Train: 0.03090 | Test: 0.03762 | 2179ms | Best: min(year, min(if(-0.16211 < 0, wind_d5, 0), load_d1))
+  Run 15/15 | Train: 0.06639 | Test: 0.07647 | 1554ms | Best: (wind_d3 * load_d4)
+
+  Mean Train RMSE        : 0.04488
+  Mean Test RMSE         : 0.05008
+  StdDev Train / Test    : 0.01956 / 0.02089
+  Best Train RMSE        : 0.02014
+  Best Test RMSE         : 0.02720
+  Avg Time               : 2319ms
+  StdDev Time            : 1633ms
+  Fastest / Slowest Time : 1325ms / 8066ms
+  Best Program           : min(load_d1, load_d7)
+
+--------------------------------------------------------------------------------------------
+Config 3/7: pop=200 | cx=0.70 | mut=0.15 | hoist=0.05 | depth=2-6 | gen=100
+--------------------------------------------------------------------------------------------
+  Run 1/15 | Train: 0.01927 | Test: 0.02658 | 4450ms | Best: min(load_d7, 0.58452)
+  Run 2/15 | Train: 0.01927 | Test: 0.02658 | 4918ms | Best: min(load_d7, load_d7)
+  Run 3/15 | Train: 0.02252 | Test: 0.02903 | 8521ms | Best: min(if((-0.01332 * load_d4) < 0, (load_d2 + if(-0.01332 < 0, price_d4, 0)), 0), load_d5)
+  Run 4/15 | Train: 0.03465 | Test: 0.04976 | 5156ms | Best: (price_d2 + price_t)
+  Run 5/15 | Train: 0.02302 | Test: 0.02955 | 7404ms | Best: ((-0.20769 * min(wind_d3, if(0.54498 < 0, humidity_d3, 0))) + load_d3)
+  Run 6/15 | Train: 0.01927 | Test: 0.02658 | 5279ms | Best: min(0.24571, load_d7)
+  Run 7/15 | Train: 0.03593 | Test: 0.03926 | 8305ms | Best: min(if(min(load_d5, -0.01959) < 0, (solar_d3 / load_d3), 0), load_d7)
+  Run 8/15 | Train: 0.02085 | Test: 0.02757 | 5187ms | Best: (load_d1 * 0.93058)
+  Run 9/15 | Train: 0.02130 | Test: 0.02837 | 4770ms | Best: (load_d6 / 0.97788)
+  Run 10/15 | Train: 0.02050 | Test: 0.02753 | 12343ms | Best: (if(solar_d1 < 0, -0.06363, 0) + load_d1)
+  Run 11/15 | Train: 0.01927 | Test: 0.02658 | 47701ms | Best: if(((temp_d5 + (price_d2 * year)) * ((0.85793 * month) - month)) < 0, load_d7, 0)
+  Run 12/15 | Train: 0.04758 | Test: 0.03966 | 14044ms | Best: (0.01174 / 0.08708)
+  Run 13/15 | Train: 0.02050 | Test: 0.02753 | 9973ms | Best: (load_d1 + if(if(temp_d5 < 0, (load_d5 / 0.47866), 0) < 0, (temp_d3 * min(wind_d2, temp_d5)), 0))
+  Run 14/15 | Train: 0.02302 | Test: 0.02955 | 8129ms | Best: min(load_d3, (if(min(hour, -0.43528) < 0, humidity_d3, 0) + (price_d3 * 0.87220)))
+  Run 15/15 | Train: 0.02267 | Test: 0.02924 | 6960ms | Best: min(load_d5, (humidity_t - 0.03051))
+
+  Mean Train RMSE        : 0.02464
+  Mean Test RMSE         : 0.03089
+  StdDev Train / Test    : 0.00793 / 0.00647
+  Best Train RMSE        : 0.01927
+  Best Test RMSE         : 0.02658
+  Avg Time               : 10209ms
+  StdDev Time            : 10392ms
+  Fastest / Slowest Time : 4450ms / 47701ms
+  Best Program           : min(load_d7, 0.58452)
+
+--------------------------------------------------------------------------------------------
+Config 4/7: pop=100 | cx=0.70 | mut=0.15 | hoist=0.05 | depth=2-4 | gen=100
+--------------------------------------------------------------------------------------------
+  Run 1/15 | Train: 0.02096 | Test: 0.02796 | 3531ms | Best: min(min(0.46127, load_d6), (day / 0.83413))
+  Run 2/15 | Train: 0.02564 | Test: 0.03493 | 1188ms | Best: (0.05341 / 0.67882)
+  Run 3/15 | Train: 0.04258 | Test: 0.05585 | 2209ms | Best: (price_d2 + price_d2)
+  Run 4/15 | Train: 0.02242 | Test: 0.02912 | 2797ms | Best: min(humidity_d5, load_d2)
+  Run 5/15 | Train: 0.03381 | Test: 0.04766 | 2573ms | Best: (price_d5 + price_t)
+  Run 6/15 | Train: 0.03538 | Test: 0.04282 | 2629ms | Best: (load_d3 / 0.79643)
+  Run 7/15 | Train: 0.02242 | Test: 0.02912 | 2667ms | Best: min(load_d2, humidity_d3)
+  Run 8/15 | Train: 0.02096 | Test: 0.02796 | 2184ms | Best: if((-0.73137 / 0.99650) < 0, load_d6, 0)
+  Run 9/15 | Train: 0.02302 | Test: 0.02955 | 2024ms | Best: if(-0.20366 < 0, load_d3, 0)
+  Run 10/15 | Train: 0.03153 | Test: 0.03841 | 2529ms | Best: min(wind_d2, load_d2)
+  Run 11/15 | Train: 0.02267 | Test: 0.02924 | 3186ms | Best: (if(-0.86809 < 0, load_d5, 0) + if(wind_d3 < 0, 0.40566, 0))
+  Run 12/15 | Train: 0.02224 | Test: 0.02839 | 2128ms | Best: min(0.13782, load_d2)
+  Run 13/15 | Train: 0.05961 | Test: 0.05980 | 2191ms | Best: (price_d4 * 0.77861)
+  Run 14/15 | Train: 0.05119 | Test: 0.04919 | 2170ms | Best: min(price_d4, 0.71251)
+  Run 15/15 | Train: 0.03351 | Test: 0.03973 | 4598ms | Best: (min(min(load_d3, humidity_d7), min(wind_d2, -0.68332)) / min((hour / month), (-0.98972 / load_d7)))
+
+  Mean Train RMSE        : 0.03120
+  Mean Test RMSE         : 0.03798
+  StdDev Train / Test    : 0.01149 / 0.01048
+  Best Train RMSE        : 0.02096
+  Best Test RMSE         : 0.02796
+  Avg Time               : 2574ms
+  StdDev Time            : 751ms
+  Fastest / Slowest Time : 1188ms / 4598ms
+  Best Program           : min(min(0.46127, load_d6), (day / 0.83413))
+
+--------------------------------------------------------------------------------------------
+Config 5/7: pop=100 | cx=0.70 | mut=0.15 | hoist=0.05 | depth=2-8 | gen=100
+--------------------------------------------------------------------------------------------
+  Run 1/15 | Train: 0.03888 | Test: 0.03950 | 3837ms | Best: (price_d7 / 0.71083)
+  Run 2/15 | Train: 0.02050 | Test: 0.02753 | 9505ms | Best: (load_d1 + (if(if(-0.50820 < 0, 0.76832, 0) < 0, min(temp_t, month), 0) * temp_d6))
+  Run 3/15 | Train: 0.03224 | Test: 0.03883 | 4434ms | Best: min(wind_d5, load_d3)
+  Run 4/15 | Train: 0.02302 | Test: 0.02955 | 4064ms | Best: if(((0.05960 / load_d3) * -0.12761) < 0, load_d3, 0)
+  Run 5/15 | Train: 0.02936 | Test: 0.03545 | 4308ms | Best: (0.75407 * load_d1)
+  Run 6/15 | Train: 0.05113 | Test: 0.04989 | 3909ms | Best: min(price_d2, price_d2)
+  Run 7/15 | Train: 0.02248 | Test: 0.02931 | 5165ms | Best: (load_d2 * ((minute / minute) - min(wind_t, price_d5)))
+  Run 8/15 | Train: 0.05074 | Test: 0.04925 | 4901ms | Best: min(price_d6, (humidity_d2 / if(0.80882 < 0, 0.46137, 0)))
+  Run 9/15 | Train: 0.02302 | Test: 0.02955 | 3618ms | Best: min(load_d3, 0.19282)
+  Run 10/15 | Train: 0.02050 | Test: 0.02753 | 3688ms | Best: if(-0.71453 < 0, load_d1, 0)
+  Run 11/15 | Train: 0.02050 | Test: 0.02753 | 6462ms | Best: if((0.70775 - (wind_t / min(wind_t, 0.51195))) < 0, load_d1, 0)
+  Run 12/15 | Train: 0.02096 | Test: 0.02796 | 11049ms | Best: min((if(((load_d1 / humidity_t) - (load_d5 / 0.18333)) < 0, day, 0) * 0.69232), ((wind_d4 / min(if(0.59723 < 0, 0.04185, 0), ((if(0.59723 < 0, 0.04185, 0) * price_t) * solar_d5))) * load_d6))
+  Run 13/15 | Train: 0.05108 | Test: 0.04859 | 4998ms | Best: min(price_d5, (solar_d6 + humidity_d6))
+  Run 14/15 | Train: 0.02105 | Test: 0.02790 | 4253ms | Best: min(load_d5, load_d7)
+  Run 15/15 | Train: 0.02242 | Test: 0.02912 | 3982ms | Best: ((load_d2 * 0.93261) / 0.93261)
+
+  Mean Train RMSE        : 0.02986
+  Mean Test RMSE         : 0.03450
+  StdDev Train / Test    : 0.01169 / 0.00831
+  Best Train RMSE        : 0.02050
+  Best Test RMSE         : 0.02753
+  Avg Time               : 5212ms
+  StdDev Time            : 2127ms
+  Fastest / Slowest Time : 3618ms / 11049ms
+  Best Program           : (load_d1 + (if(if(-0.50820 < 0, 0.76832, 0) < 0, min(temp_t, month), 0) * temp_d6))
+
+--------------------------------------------------------------------------------------------
+Config 6/7: pop=100 | cx=0.80 | mut=0.10 | hoist=0.05 | depth=2-6 | gen=100
+--------------------------------------------------------------------------------------------
+  Run 1/15 | Train: 0.02267 | Test: 0.02924 | 3161ms | Best: min(load_d5, humidity_t)
+  Run 2/15 | Train: 0.02753 | Test: 0.03320 | 2391ms | Best: (load_d4 - -0.01514)
+  Run 3/15 | Train: 0.03644 | Test: 0.04872 | 3292ms | Best: (price_d5 + price_d6)
+  Run 4/15 | Train: 0.05714 | Test: 0.08347 | 2122ms | Best: (price_t / 0.39991)
+  Run 5/15 | Train: 0.01927 | Test: 0.02658 | 3582ms | Best: if((humidity_d7 - year) < 0, load_d7, 0)
+  Run 6/15 | Train: 0.05642 | Test: 0.05414 | 4889ms | Best: if(((min(-0.59392, 0.36135) - (-0.10636 + 0.77034)) / (0.77750 * solar_d7)) < 0, price_d5, 0)
+  Run 7/15 | Train: 0.02045 | Test: 0.02725 | 2572ms | Best: min(0.14640, load_d1)
+  Run 8/15 | Train: 0.05072 | Test: 0.04979 | 3017ms | Best: min(price_d1, price_d1)
+  Run 9/15 | Train: 0.02242 | Test: 0.02912 | 2648ms | Best: min(humidity_d1, load_d2)
+  Run 10/15 | Train: 0.02279 | Test: 0.02484 | 5483ms | Best: if(min((-0.40358 - (price_d1 - -0.09556)), if((-0.84239 - day) < 0, price_d5, 0)) < 0, 0.09948, 0)
+  Run 11/15 | Train: 0.02626 | Test: 0.03233 | 2749ms | Best: (load_d2 * 0.82571)
+  Run 12/15 | Train: 0.02445 | Test: 0.03071 | 5281ms | Best: min(min(load_d2, load_d3), ((min((minute * solar_d3), (minute * solar_d3)) / minute) + wind_d1))
+  Run 13/15 | Train: 0.04771 | Test: 0.03978 | 1668ms | Best: (-0.02547 - -0.16038)
+  Run 14/15 | Train: 0.02267 | Test: 0.02924 | 4260ms | Best: min((price_d7 + ((humidity_d4 - solar_d1) + solar_d1)), load_d5)
+  Run 15/15 | Train: 0.02303 | Test: 0.02959 | 2683ms | Best: min(load_d4, load_d4)
+
+  Mean Train RMSE        : 0.03200
+  Mean Test RMSE         : 0.03787
+  StdDev Train / Test    : 0.01337 / 0.01509
+  Best Train RMSE        : 0.01927
+  Best Test RMSE         : 0.02484
+  Avg Time               : 3320ms
+  StdDev Time            : 1120ms
+  Fastest / Slowest Time : 1668ms / 5483ms
+  Best Program           : if((humidity_d7 - year) < 0, load_d7, 0)
+
+--------------------------------------------------------------------------------------------
+Config 7/7: pop=100 | cx=0.50 | mut=0.30 | hoist=0.10 | depth=2-6 | gen=100
+--------------------------------------------------------------------------------------------
+  Run 1/15 | Train: 0.02096 | Test: 0.02765 | 2346ms | Best: (0.92551 * load_d1)
+  Run 2/15 | Train: 0.01927 | Test: 0.02658 | 3520ms | Best: min(min(load_d7, humidity_d1), load_d7)
+  Run 3/15 | Train: 0.01927 | Test: 0.02658 | 3457ms | Best: min(humidity_d4, load_d7)
+  Run 4/15 | Train: 0.01927 | Test: 0.02658 | 3213ms | Best: min(load_d7, load_d7)
+  Run 5/15 | Train: 0.01927 | Test: 0.02658 | 4081ms | Best: (load_d7 - if(solar_t < 0, if((day * -0.34132) < 0, min(solar_t, 0.44494), 0), 0))
+  Run 6/15 | Train: 0.02096 | Test: 0.02796 | 4953ms | Best: if(min((if(0.34118 < 0, year, 0) / price_d2), min(-0.54081, (solar_t * -0.58158))) < 0, load_d6, 0)
+  Run 7/15 | Train: 0.02302 | Test: 0.02955 | 3298ms | Best: min(humidity_d3, load_d3)
+  Run 8/15 | Train: 0.02302 | Test: 0.02955 | 3814ms | Best: (load_d3 + min((wind_d1 * day), if(wind_d3 < 0, price_d2, 0)))
+  Run 9/15 | Train: 0.03015 | Test: 0.03718 | 2785ms | Best: min(wind_d6, load_d7)
+  Run 10/15 | Train: 0.05832 | Test: 0.05159 | 2757ms | Best: min(0.15193, (load_d5 + load_d5))
+  Run 11/15 | Train: 0.03118 | Test: 0.03796 | 3120ms | Best: min(wind_d5, load_d6)
+  Run 12/15 | Train: 0.03600 | Test: 0.03903 | 2348ms | Best: (0.15054 - price_d7)
+  Run 13/15 | Train: 0.02096 | Test: 0.02796 | 2688ms | Best: min(0.87219, load_d6)
+  Run 14/15 | Train: 0.02999 | Test: 0.03690 | 3224ms | Best: min(wind_d1, load_d7)
+  Run 15/15 | Train: 0.03264 | Test: 0.03999 | 2499ms | Best: (0.06437 + price_d6)
+
+  Mean Train RMSE        : 0.02695
+  Mean Test RMSE         : 0.03278
+  StdDev Train / Test    : 0.01003 / 0.00710
+  Best Train RMSE        : 0.01927
+  Best Test RMSE         : 0.02658
+  Avg Time               : 3207ms
+  StdDev Time            : 683ms
+  Fastest / Slowest Time : 2346ms / 4953ms
+  Best Program           : min(min(load_d7, humidity_d1), load_d7)
+
+--------------------------------------------------------------------------------------------
+Experiment completed : 2026-04-20T17:00:04.113134100+02:00[Africa/Johannesburg]
+--------------------------------------------------------------------------------------------
