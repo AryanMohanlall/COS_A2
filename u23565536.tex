@@ -353,6 +353,32 @@ The SBGP experiments were run for 15 independent runs per configuration. This sa
 
 The best mean test performance for SBGP was obtained by the larger population configuration, \texttt{pop=200}, with a mean test RMSE of 0.03089. This suggests that the larger population helped SBGP explore more structural regions. The best individual test result was obtained by the baseline configuration, with a best test RMSE of 0.02450. The \texttt{cx=0.80, mut=0.10} configuration also found a strong individual solution with a best test RMSE of 0.02484. These best values show that SBGP was able to find competitive individual solutions, but the mean and standard deviation values show that it did not do so reliably for every run.
 
+\subsection{Best Evolved Programs}
+
+Table~\ref{tab:best-programs} shows the best evolved program reported in \texttt{log.txt} for each configuration. In the implementation, the reported best program is selected using the lowest training RMSE within the 15 independent runs for that configuration. The corresponding test RMSE for that same run is also shown. The expressions are included because the final syntax trees are an important output of GP: they show which variables and structures were actually discovered by the evolutionary process, not only the numerical error achieved by the run.
+
+\begin{table}[h]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tabular}{llccl}
+\hline
+\textbf{\#} & \textbf{Configuration} & \textbf{Train RMSE} & \textbf{Test RMSE} & \textbf{Best program from log} \\
+\hline
+1 & Baseline & 0.01927 & 0.02658 & \texttt{if(min((((0.35585 * 0.00951) / (-0.50530 + load\_d7)) - min(humidity\_d4, humidity\_d4)), ((price\_d3 + humidity\_d7) * (wind\_d5 + wind\_d7))) \textless{} 0, min(((wind\_d4 + if(-0.89509 \textless{} 0, 0.47836, 0)) + wind\_d7), load\_d7), 0)} \\
+2 & pop=50 & 0.02014 & 0.02720 & \texttt{min(load\_d1, load\_d7)} \\
+3 & pop=200 & 0.01927 & 0.02658 & \texttt{min(load\_d7, 0.58452)} \\
+4 & depth=2-4 & 0.02096 & 0.02796 & \texttt{min(min(0.46127, load\_d6), (day / 0.83413))} \\
+5 & depth=2-8 & 0.02050 & 0.02753 & \texttt{(load\_d1 + (if(if(-0.50820 \textless{} 0, 0.76832, 0) \textless{} 0, min(temp\_t, month), 0) * temp\_d6))} \\
+6 & cx=0.80, mut=0.10 & 0.01927 & 0.02658 & \texttt{if((humidity\_d7 - year) \textless{} 0, load\_d7, 0)} \\
+7 & cx=0.50, mut=0.30, hoist=0.10 & 0.01927 & 0.02658 & \texttt{min(min(load\_d7, humidity\_d1), load\_d7)} \\
+\hline
+\end{tabular}}
+\caption{Best evolved SBGP programs reported in \texttt{log.txt}, selected by lowest training RMSE within each configuration.}
+\label{tab:best-programs}
+\end{table}
+
+Most of the best programs rely on lagged load variables, especially \texttt{load\_d1}, \texttt{load\_d6}, and \texttt{load\_d7}. This is a sensible result for a residential load forecasting problem, because the same time on previous days is strongly informative. Some expressions contain additional weather, price, or calendar variables, but in several cases these appear inside conditionals or products that simplify to a lagged-load predictor for most inputs. The table therefore supports the main interpretation of the results: SBGP discovered relevant temporal predictors, but the structure-based restrictions did not make the search consistently more reliable than canonical GP.
+
 \begin{table}[h]
 \centering
 \resizebox{\textwidth}{!}{
