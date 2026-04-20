@@ -1,0 +1,9 @@
+.git
+bin
+build
+dist
+*.class
+*.log
+*.pdf
+*.docx
+*.tex

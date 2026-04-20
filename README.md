@@ -1,8 +1,6 @@
-# COS700-A2
-
 ## COS 710
 
-### Artificial Intelligence
+### Artificial Intelligence 1
 
 Assignment 2: Structure-Based Genetic Programming for Regression
 
@@ -76,6 +74,26 @@ java -cp build Main | tee log.txt
 
 This project has no external dependencies, so you can package all compiled classes into one executable JAR. The examples below use `build/` as the compile-output folder.
 
+## Usage with Docker
+
+Build the image from the repository root:
+
+```bash
+docker build -t cos710-a2 .
+```
+
+Run the experiment:
+
+```bash
+docker run --rm cos710-a2
+```
+
+Save the output to `log.txt` on the host machine:
+
+```bash
+docker run --rm cos710-a2 > log.txt
+```
+
 ### Windows (PowerShell)
 
 Run from the repository root:
@@ -84,13 +102,13 @@ Run from the repository root:
 New-Item -ItemType Directory -Force build | Out-Null
 New-Item -ItemType Directory -Force dist | Out-Null
 javac -d .\build .\src\*.java
-jar --create --file .\dist\cos700-a2.jar --main-class Main -C .\build .
+jar --create --file .\dist\cos710-a2.jar --main-class Main -C .\build .
 ```
 
 Run the JAR from the repository root:
 
 ```powershell
-java -jar .\dist\cos700-a2.jar
+java -jar .\dist\cos710-a2.jar
 ```
 
 ### Linux (bash)
@@ -100,13 +118,13 @@ Run from the repository root:
 ```bash
 mkdir -p build dist
 javac -d build src/*.java
-jar --create --file dist/cos700-a2.jar --main-class Main -C build .
+jar --create --file dist/cos710-a2.jar --main-class Main -C build .
 ```
 
 Run the JAR from the repository root:
 
 ```bash
-java -jar dist/cos700-a2.jar
+java -jar dist/cos710-a2.jar
 ```
 
 ### Optional: Run JAR from another folder

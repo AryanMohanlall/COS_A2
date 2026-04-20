@@ -405,6 +405,6 @@ The main finding is that SBGP was less reliable than canonical GP for this data 
 
 The best SBGP programs were still mostly based on lagged load variables such as \texttt{load\_d1}, \texttt{load\_d6}, and \texttt{load\_d7}. This is sensible because residential electricity demand has strong temporal structure, and the same time on previous days is highly informative. Therefore, SBGP did discover relevant predictors, but the structural restrictions did not consistently improve the search beyond canonical GP.
 
-Overall, Assignment 2 did not outperform Assignment 1 in terms of average test RMSE. This does not mean that SBGP is generally worse than canonical GP; it means that for this implementation, data set, and parameter settings, the structure-based search was less stable. Further tuning of the SBGP-specific parameters, especially the global area depth $D_g$, similarity threshold $T_g$, and local search tolerance $W_g$, may improve reliability. A separate validation set could also be used to select the final model without relying only on training RMSE.
+Overall, Assignment 2 did not improve on Assignment 1's average test RMSE. For this implementation, data set, and parameter settings, SBGP was less stable than canonical GP. Tuning $D_g$, $T_g$, and $W_g$, and using a separate validation set for model selection, may improve reliability.
 
 \end{document}
